@@ -18,11 +18,11 @@ export const Navbar = () => {
           <h2 className="text-xl font-black tracking-tight uppercase">Ekuase General Supplies</h2>
         </Link>
         <nav className="hidden lg:flex items-center gap-8 flex-1 justify-center">
-          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="#">Materials</Link>
-          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="#">Warehouses</Link>
-          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="#">Hire Professionals</Link>
-          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="#">Products</Link>
-          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="#">Track Order</Link>
+          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="/products">Materials</Link>
+          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="/warehouses">Warehouses</Link>
+          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="/services">Hire Professionals</Link>
+          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="/products">Products</Link>
+          <Link className="text-sm font-semibold hover:text-primary transition-colors" href="/orders">Track Order</Link>
         </nav>
         <div className="flex items-center gap-4 shrink-0">
           <Link href="/cart">
