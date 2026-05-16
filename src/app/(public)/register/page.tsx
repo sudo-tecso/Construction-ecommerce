@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { toast } from "react-hot-toast";
@@ -61,8 +62,7 @@ export default function RegisterPage() {
         if (loginResult?.error) {
           router.push("/login");
         } else {
-          router.push("/customer/dashboard");
-          router.refresh();
+          window.location.href = "/customer/dashboard";
         }
       }
     } catch (error: any) {

@@ -1,12 +1,10 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { formatCurrency } from "@/lib/utils";
-import { ShoppingBag, Search, Filter, ChevronRight, Eye } from "lucide-react";
+import { formatCurrency, cn } from "@/lib/utils";
+import { ShoppingBag, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 export default async function OrdersPage({
   searchParams,
@@ -95,7 +93,7 @@ export default async function OrdersPage({
                 <div className="grid grid-cols-2 md:flex md:items-center gap-8 md:gap-12">
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Date</p>
-                    <p className="text-sm font-bold text-secondary">{format(order.createdAt, "MMM dd, yyyy")}</p>
+                    <p className="text-sm font-bold text-secondary">{new Date(order.createdAt).toLocaleDateString("en-GH", { day: "2-digit", month: "short", year: "numeric" })}</p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Items</p>

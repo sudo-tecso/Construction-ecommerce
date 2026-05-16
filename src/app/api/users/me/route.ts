@@ -11,11 +11,11 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, phone, address } = body;
+    const { name, phone } = body;
 
     const user = await prisma.user.update({
       where: { id: session.user.id },
-      data: { name, phone, address },
+      data: { name, phone },
     });
 
     return NextResponse.json(user);

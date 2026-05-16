@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function GET(req: Request, { params }: { params: { orderId: string } }) {
+export async function GET(
+  req: Request,
+  { params }: { params: { orderId: string } }
+) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -12,13 +15,17 @@ export async function GET(req: Request, { params }: { params: { orderId: string 
     const ticket = await prisma.ticket.findFirst({
       where: {
         orderId: params.orderId,
-        order: {
-          userId: session.user.id
-        }
+        order: { userId: session.user.id },
       },
       include: {
-        order: true
-      }
+        order: {
+          include: {
+            items: {
+              include: { product: { select: { name: true, images: true } } },
+            },
+          },
+        },
+      },
     });
 
     if (!ticket) {
@@ -27,6 +34,7 @@ export async function GET(req: Request, { params }: { params: { orderId: string 
 
     return NextResponse.json(ticket);
   } catch (error) {
+    console.error("Ticket fetch error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

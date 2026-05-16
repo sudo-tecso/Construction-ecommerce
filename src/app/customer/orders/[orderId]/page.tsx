@@ -17,7 +17,6 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { OrderStepper } from "@/components/shared/OrderStepper";
 import Image from "next/image";
@@ -57,7 +56,7 @@ export default async function OrderDetailPage({
             <h1 className="text-4xl font-heading font-black uppercase tracking-tighter text-secondary">Order Details</h1>
             <span className="text-xs font-black uppercase tracking-widest px-4 py-1.5 bg-muted rounded-full">#{order.id.slice(-8).toUpperCase()}</span>
           </div>
-          <p className="text-sm font-medium text-muted-foreground italic">Placed on {format(order.createdAt, "MMMM dd, yyyy 'at' hh:mm a")}</p>
+          <p className="text-sm font-medium text-muted-foreground italic">Placed on {new Date(order.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric", hour12: true })}</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="font-bold uppercase tracking-widest text-[10px] h-12">
@@ -140,7 +139,7 @@ export default async function OrderDetailPage({
                   <div>
                     <p className="text-sm font-bold text-secondary">{order.delivery?.status || "Processing"}</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                      {order.delivery?.estimatedDate ? `ETA: ${format(order.delivery.estimatedDate, "MMM dd")}` : "Awaiting Schedule"}
+                      {order.delivery?.estimatedDate ? `ETA: ${new Date(order.delivery.estimatedDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}` : "Awaiting Schedule"}
                     </p>
                   </div>
                 </div>

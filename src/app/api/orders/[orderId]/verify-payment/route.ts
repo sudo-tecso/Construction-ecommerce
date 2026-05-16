@@ -4,7 +4,10 @@ import prisma from "@/lib/prisma";
 import { verifyPaystackTransaction } from "@/lib/paystack";
 import { sendOrderConfirmationEmail } from "@/lib/notifications";
 
-export async function POST(req: Request, { params }: { params: { orderId: string } }) {
+export async function POST(
+  req: Request,
+  { params }: { params: { orderId: string } }
+) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,27 +17,38 @@ export async function POST(req: Request, { params }: { params: { orderId: string
     const { reference } = await req.json();
     const verification = await verifyPaystackTransaction(reference);
 
-    if (verification.data.status === "success") {
+    if (verification?.data?.status === "success") {
       const order = await prisma.order.update({
         where: { id: params.orderId },
-        data: {
-          status: "PAID",
-          paystackRef: reference,
+        data: { status: "PAID", paystackRef: reference },
+        include: {
+          items: { include: { product: { select: { name: true } } } },
         },
       });
 
-      // Send confirmation email
       try {
-        await sendOrderConfirmationEmail(session.user.email!, order);
+        await sendOrderConfirmationEmail(session.user.email!, {
+          id: order.id,
+          totalAmount: Number(order.totalAmount),
+          items: order.items.map((i) => ({
+            name: i.product.name,
+            quantity: i.quantity,
+            unitPrice: Number(i.unitPrice),
+          })),
+        });
       } catch (e) {
         console.error("Confirmation email failed:", e);
       }
 
       return NextResponse.json({ success: true });
-    } else {
-      return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
     }
+
+    return NextResponse.json(
+      { error: "Payment verification failed" },
+      { status: 400 }
+    );
   } catch (error) {
+    console.error("Verify payment error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

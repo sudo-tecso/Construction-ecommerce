@@ -94,9 +94,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     >
                       <Icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-slate-500")} />
                       <span className="text-xs font-bold">{item.name}</span>
-                      {item.badge && (
+                      {(item as any).badge && (
                         <span className="ml-auto px-2 py-0.5 bg-primary/20 text-primary text-[9px] font-black rounded-full">
-                          {item.badge}
+                          {(item as any).badge}
                         </span>
                       )}
                       {isActive && (

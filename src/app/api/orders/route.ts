@@ -13,11 +13,13 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { items, deliveryDetails, paymentMethod, totalAmount, deliveryFee } = body;
+    const { items, deliveryDetails, paymentMethod, totalAmount, deliveryFee, paystackRef } = body;
 
-    // Use a transaction to ensure atomicity
+    if (!items?.length) {
+      return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Create the Order
       const order = await tx.order.create({
         data: {
           userId: session.user.id,
@@ -26,6 +28,8 @@ export async function POST(req: Request) {
           paymentMethod,
           status: paymentMethod === "TICKET" ? "TICKET_GENERATED" : "PENDING",
           deliveryAddress: deliveryDetails.address,
+          // Store the pre-generated ref so the webhook can look it up
+          paystackRef: paymentMethod === "ONLINE" && paystackRef ? paystackRef : null,
           items: {
             create: items.map((item: any) => ({
               productId: item.productId,
@@ -34,30 +38,45 @@ export async function POST(req: Request) {
             })),
           },
         },
+        include: { items: { include: { product: true } } },
       });
 
-      // 2. Handle Ticket Generation if needed
       if (paymentMethod === "TICKET") {
         const ticketCode = `BM-${nanoid(5).toUpperCase()}`;
-        const qrCodeBase64 = await QRCode.toDataURL(ticketCode);
-        
+        const qrCodeBase64 = await QRCode.toDataURL(ticketCode, {
+          width: 400,
+          margin: 2,
+          color: { dark: "#1e293b", light: "#ffffff" },
+        });
+
+        // 48 hours from now, explicitly set (schema default is fallback)
+        const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
+
         const ticket = await tx.ticket.create({
           data: {
             orderId: order.id,
             ticketCode,
             qrCodeUrl: qrCodeBase64,
             status: "PENDING",
+            expiresAt,
           },
         });
 
-        // 3. Send Ticket Email (Non-blocking or handle error)
         try {
           await sendTicketEmail(session.user.email!, {
             ticketCode,
-            id: order.id,
+            orderId: order.id,
+            qrCodeBase64,
+            totalAmount,
+            expiresAt: expiresAt.toISOString(),
+            items: order.items.map((i: any) => ({
+              name: i.product.name,
+              quantity: i.quantity,
+              unitPrice: Number(i.unitPrice),
+            })),
           });
         } catch (emailErr) {
-          console.error("Failed to send ticket email:", emailErr);
+          console.error("Ticket email failed:", emailErr);
         }
 
         return { order, ticket };

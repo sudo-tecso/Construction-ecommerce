@@ -47,8 +47,13 @@ export default function LoginPage() {
         toast.error("Invalid email or password");
       } else {
         toast.success("Welcome back!");
-        router.push(callbackUrl);
-        router.refresh();
+        if (callbackUrl === "/") {
+          // Navigating to /login triggers the middleware which securely redirects users to their specific dashboard based on role
+          window.location.href = "/login";
+        } else {
+          router.push(callbackUrl);
+          router.refresh();
+        }
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
@@ -147,7 +152,7 @@ export default function LoginPage() {
           <p className="mt-8 text-center text-sm text-slate-500 font-medium">
             Don't have an account?{" "}
             <Link href="/register" className="text-primary hover:brightness-110 font-bold transition-colors">
-              Request access
+              Sign up
             </Link>
           </p>
         </div>

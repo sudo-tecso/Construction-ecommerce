@@ -21,7 +21,7 @@ export async function POST(req: Request) {
           success: false,
           error: {
             code: "VALIDATION_ERROR",
-            message: validatedData.error.errors[0].message,
+            message: validatedData.error.issues[0].message,
           },
         },
         { status: 400 }

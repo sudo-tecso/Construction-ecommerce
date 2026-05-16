@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
-import { Plus, Edit, Trash2, Layers, ChevronRight, GRP, Move } from "lucide-react";
+import { Plus, Edit, Trash2, Layers, ChevronRight, Move } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Modal } from "@/components/shared/Modal";
 import { useForm } from "react-hook-form";
@@ -166,7 +166,7 @@ export default function CategoriesPage() {
            <h3 className="font-black text-secondary text-lg uppercase tracking-tight">Organization Tips</h3>
            <p className="text-sm text-secondary/70 leading-relaxed">
              Use specific categories to help customers find construction materials faster. 
-             Sub-categories like "Sands -> White Sand" are better for SEO and navigation.
+             Sub-categories like &quot;Sands → White Sand&quot; are better for SEO and navigation.
            </p>
            <div className="pt-4 space-y-2">
               <div className="flex items-center gap-3 text-xs font-bold text-secondary">

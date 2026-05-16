@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
+import { sendOrderConfirmationEmail } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   const secret = process.env.PAYSTACK_SECRET_KEY!;
@@ -16,21 +17,39 @@ export async function POST(req: Request) {
   const event = JSON.parse(body);
 
   if (event.event === "charge.success") {
-    const reference = event.data.reference;
-    // Extract orderId from reference if possible, or search by paystackRef
-    // My reference format was `BM-${orderId}-${Date.now()}`
-    const orderId = reference.split("-")[1];
+    const reference = event.data.reference as string;
 
-    if (orderId) {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: {
-          status: "PAID",
-          paystackRef: reference,
-        },
+    // Look up by paystackRef (stored at order creation)
+    const order = await prisma.order.findFirst({
+      where: { paystackRef: reference },
+      include: {
+        user: true,
+        items: { include: { product: true } },
+      },
+    });
+
+    if (order && order.status !== "PAID") {
+      const updated = await prisma.order.update({
+        where: { id: order.id },
+        data: { status: "PAID" },
       });
+
+      // Send confirmation email as fallback (in case inline callback failed)
+      try {
+        await sendOrderConfirmationEmail(order.user.email!, {
+          id: order.id,
+          totalAmount: Number(order.totalAmount),
+          items: order.items.map((i) => ({
+            name: i.product.name,
+            quantity: i.quantity,
+            unitPrice: Number(i.unitPrice),
+          })),
+        });
+      } catch (e) {
+        console.error("Webhook confirmation email failed:", e);
+      }
     }
   }
 
-  return NextResponse.json({ status: "success" });
+  return NextResponse.json({ status: "ok" });
 }

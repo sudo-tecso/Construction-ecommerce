@@ -14,12 +14,12 @@ import { cn } from "@/lib/utils";
 const productSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
   description: z.string().optional(),
-  price: z.coerce.number().min(0, "Price must be at least 0"),
+  price: z.number().min(0, "Price must be at least 0"),
   categoryId: z.string().min(1, "Category is required"),
-  stock: z.coerce.number().int().min(0, "Stock must be at least 0"),
+  stock: z.number().int().min(0, "Stock must be at least 0"),
   sku: z.string().min(1, "SKU is required"),
   images: z.array(z.string()).max(5, "Max 5 images allowed"),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -162,7 +162,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest text-secondary/60">Price (GHS)</label>
             <input
-              {...register("price")}
+              {...register("price", { valueAsNumber: true })}
               type="number"
               step="0.01"
               className={cn(
@@ -176,7 +176,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <div className="space-y-2">
             <label className="text-xs font-black uppercase tracking-widest text-secondary/60">Stock Quantity</label>
             <input
-              {...register("stock")}
+              {...register("stock", { valueAsNumber: true })}
               type="number"
               className={cn(
                 "w-full px-4 py-3 bg-muted/30 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all",
@@ -214,7 +214,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             {images.length < 5 && (
               <div className="aspect-square border-2 border-dashed rounded-xl flex items-center justify-center bg-muted/10 hover:bg-muted/30 transition-colors cursor-pointer relative">
                 <UploadButton
-                  endpoint="imageUploader"
+                  endpoint="productImage"
                   onClientUploadComplete={(res) => {
                     if (res) {
                       const newImages = [...images, ...res.map((f) => f.url)].slice(0, 5);

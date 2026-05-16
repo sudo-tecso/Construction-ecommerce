@@ -29,7 +29,7 @@ export default function OrderSuccessPage() {
           
           <div className="space-y-2">
             <h1 className="text-4xl md:text-5xl font-heading font-black uppercase tracking-tighter text-secondary">Payment Successful!</h1>
-            <p className="text-muted-foreground font-medium uppercase tracking-widest text-[10px]">Order ID: #{orderId.slice(-8).toUpperCase()}</p>
+            <p className="text-muted-foreground font-medium uppercase tracking-widest text-[10px]">Order ID: #{String(orderId).slice(-8).toUpperCase()}</p>
           </div>
 
           <div className="bg-white p-8 rounded-[40px] border shadow-2xl w-full text-left space-y-6">

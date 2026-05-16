@@ -41,11 +41,18 @@ export const Navbar = () => {
               <span className="text-sm font-bold">Sign Out</span>
             </button>
           ) : (
-            <Link href="/login">
-              <button className="flex items-center justify-center rounded-lg h-10 px-5 bg-primary text-background-dark hover:brightness-110 transition-all">
-                <span className="text-sm font-bold">Sign In</span>
-              </button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link href="/login">
+                <button className="flex items-center justify-center rounded-lg h-10 px-5 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                  <span className="text-sm font-bold">Sign In</span>
+                </button>
+              </Link>
+              <Link href="/register">
+                <button className="flex items-center justify-center rounded-lg h-10 px-5 bg-primary text-background-dark hover:brightness-110 transition-all">
+                  <span className="text-sm font-bold">Sign Up</span>
+                </button>
+              </Link>
+            </div>
           )}
           <div className="size-10 rounded-full border-2 border-primary/20 bg-slate-200 overflow-hidden cursor-pointer">
             <img alt="User Profile" className="w-full h-full object-cover" data-alt="Professional contractor profile headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrmR1ESLuSDBEfF3cxO8Gkmjx_9GQe0gwNe2h4iMtG20EJkwF7kOoPoQkCbuCWh3oW4Ylf0MSNSJROaRp7jKJF7gY2VFpQ4QDXdagggYAmm7SxqgiNka_T-WbOMnwI_jOODD8hFwxiFOqUhQP0s09-_3ggPYOf7LSJ9joY_Mvv-cvT6d4Wc0HH4QCPk_C2cHRe0Rma8I926UZcPug8g4XNABYAmhli6pqDkUra22fV6HqKdSs7dLHyMstEAeWDGIXakh4483sjMwK_"/>

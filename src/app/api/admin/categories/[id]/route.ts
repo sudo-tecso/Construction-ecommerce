@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { createAuditLog } from "@/lib/audit";
 
@@ -44,7 +44,7 @@ export async function PATCH(
     return NextResponse.json(category);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { status: 400 });
+      return NextResponse.json({ error: error.issues }, { status: 400 });
     }
     console.error("Failed to update category:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

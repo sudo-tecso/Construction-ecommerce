@@ -136,9 +136,10 @@ model Ticket {
   id         String       @id @default(cuid())
   orderId    String       @unique
   order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  ticketCode String       @unique // e.g. "BM-99234"
+  ticketCode String       @unique // e.g. "BM-K7X2P"
   qrCodeUrl  String?
   status     TicketStatus @default(PENDING)
+  expiresAt  DateTime     @default(dbgenerated("now() + interval '48 hours'"))
   verifiedAt DateTime?
   verifiedBy String? // Employee ID
 
